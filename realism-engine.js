@@ -1,87 +1,63 @@
-// -----------------------------
-// Realism Engine
-// -----------------------------
-
-// Config
-const REALISM_CONFIG = {
-    minInterval: 3000,  // min 3 sec between synthetic comments
-    maxInterval: 12000, // max 12 sec
-    maxCommentsPerPost: 50, // max comments per post for realism
-    adminReplyChance: 0.2 // 20% chance admin replies
-};
-
-// Track comments per post (keyed by post ID)
-const postComments = {}; 
+// Ensure these are defined in index.html
+const commentsContainer = document.getElementById('tg-comments-container');
 
 // -----------------------------
-// Inject synthetic comment
+// Add synthetic comment
 // -----------------------------
-function injectSyntheticComment(postId) {
-    // Ensure post comment array exists
-    if (!postComments[postId]) postComments[postId] = [];
-
-    // Stop if reached max comments
-    if (postComments[postId].length >= REALISM_CONFIG.maxCommentsPerPost) return;
-
-    // Generate comment
-    const textOptions = [
-        "Amazing post! 🔥",
-        "Thanks for sharing 😊",
-        "I was looking for this!",
-        "Wow, really helpful 👍",
-        "Can someone explain this further?",
-        "LOL 😂",
-        "Not sure I agree 🤔",
-        "Great content 💯",
-        "Where can I learn more?",
-        "This is epic!"
-        // ... expand to 1000+ synthetic phrases for realism
+function addSyntheticComment() {
+    const user = syntheticUsers[Math.floor(Math.random() * syntheticUsers.length)];
+    const textPool = [
+        "Wow this is amazing!",
+        "Can someone explain?",
+        "I totally agree.",
+        "This is 🔥",
+        "Where can I find more info?",
+        "💎💎💎",
+        "Lol that's funny!",
+        "I need this!"
     ];
-    const text = textOptions[Math.floor(Math.random() * textOptions.length)];
-    const commentObj = createComment(text); // from personas.js
+    const text = textPool[Math.floor(Math.random() * textPool.length)];
 
-    // Push into array and render
-    postComments[postId].push(commentObj);
-    renderComment(commentObj);
+    const commentEl = document.createElement('div');
+    commentEl.className = 'tg-comment';
 
-    // Random chance admin replies
-    if (Math.random() < REALISM_CONFIG.adminReplyChance) {
-        setTimeout(() => {
-            const adminText = "Hi! Profit Hunter 🌐 here, glad you asked 😊";
-            const adminComment = createComment(adminText, null, true);
-            postComments[postId].push(adminComment);
-            renderComment(adminComment);
-        }, 2000 + Math.random() * 2000); // admin reply 2-4 sec later
-    }
+    commentEl.innerHTML = `
+        <img class="tg-comment-avatar" src="${user.avatar}" alt="${user.name}">
+        <div class="tg-bubble">${user.name}<br>${text}</div>
+    `;
 
-    // Schedule next synthetic comment
-    scheduleNextSynthetic(postId);
+    commentsContainer.appendChild(commentEl);
+    commentsContainer.scrollTop = commentsContainer.scrollHeight;
 }
 
 // -----------------------------
-// Schedule next synthetic comment
+// Admin reply
 // -----------------------------
-function scheduleNextSynthetic(postId) {
-    const interval = REALISM_CONFIG.minInterval + Math.random() * 
-                     (REALISM_CONFIG.maxInterval - REALISM_CONFIG.minInterval);
-    setTimeout(() => injectSyntheticComment(postId), interval);
+function addAdminReply(text) {
+    const commentEl = document.createElement('div');
+    commentEl.className = 'tg-comment';
+
+    commentEl.innerHTML = `
+        <img class="tg-comment-avatar" src="${adminUser.avatar}" alt="${adminUser.name}">
+        <div class="tg-bubble admin">${adminUser.name}<br>${text}</div>
+    `;
+
+    commentsContainer.appendChild(commentEl);
+    commentsContainer.scrollTop = commentsContainer.scrollHeight;
 }
 
 // -----------------------------
-// Initialize realism for a post
+// Simulate feed with timing
 // -----------------------------
-function startRealismForPost(postId) {
-    if (!postComments[postId]) postComments[postId] = [];
+function simulateFeed() {
+    setInterval(() => {
+        // 70% chance for synthetic comment
+        if (Math.random() < 0.7) addSyntheticComment();
 
-    // Start with random number of existing comments (5–15)
-    const initialCount = 5 + Math.floor(Math.random() * 11);
-    for (let i = 0; i < initialCount; i++) {
-        const text = "Initial comment " + (i + 1);
-        const commentObj = createComment(text);
-        postComments[postId].push(commentObj);
-        renderComment(commentObj);
-    }
-
-    // Start injecting synthetic comments
-    scheduleNextSynthetic(postId);
+        // 5% chance for admin reply
+        if (Math.random() < 0.05) addAdminReply("Thanks for your question! 🔹");
+    }, 2500 + Math.random() * 3000); // every 2.5-5.5s
 }
+
+// Start feed
+simulateFeed();
