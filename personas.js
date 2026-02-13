@@ -1,43 +1,41 @@
-// -----------------------------
-// Avatar Pool
-// -----------------------------
-const avatarPool = [];
+// personas.js
 
-// Realistic faces (Pravatar)
-for (let i = 1; i <= 200; i++) {
-    avatarPool.push(`https://i.pravatar.cc/150?img=${i}`);
-}
+const Personas = (() => {
+    // Admin persona
+    const admin = {
+        name: "Profit Hunter 🌐",
+        avatar: "static/admin.png",
+        isAdmin: true
+    };
 
-// Anime / random placeholders
-for (let i = 1; i <= 50; i++) {
-    avatarPool.push(`https://placeimg.com/64/64/any?${i}`);
-}
+    // Synthetic persona pool (sample of 20, expand to 1000+)
+    const syntheticPool = [
+        { name: "Alice 🌸", avatar: "static/avatars/avatar1.png", isAdmin: false },
+        { name: "Bob", avatar: "static/avatars/avatar2.png", isAdmin: false },
+        { name: "Charlie 😎", avatar: "static/avatars/avatar3.png", isAdmin: false },
+        { name: "Diana", avatar: "static/avatars/avatar4.png", isAdmin: false },
+        { name: "Eve 💰", avatar: "static/avatars/avatar5.png", isAdmin: false },
+        { name: "Frank", avatar: "static/avatars/avatar6.png", isAdmin: false },
+        { name: "Gina 🐱", avatar: "static/avatars/avatar7.png", isAdmin: false },
+        { name: "Harry", avatar: "static/avatars/avatar8.png", isAdmin: false },
+        { name: "Ivy 🍀", avatar: "static/avatars/avatar9.png", isAdmin: false },
+        { name: "Jack", avatar: "static/avatars/avatar10.png", isAdmin: false },
+        // ... expand up to 1000
+    ];
 
-// -----------------------------
-// Username Pool
-// -----------------------------
-const usernamePool = [];
-const emojis = ['🔥','💰','🌐','🚀','🎯','💎','📈'];
+    // Random persona generator
+    function getRandom() {
+        // 1% chance for admin to appear automatically in feed
+        if (Math.random() < 0.01) return admin;
 
-for (let i = 0; i < 1000; i++) {
-    const emoji = emojis[Math.floor(Math.random() * emojis.length)];
-    const name = Math.random() > 0.5 ? `User${i}` : `user${i}`;
-    usernamePool.push(`${emoji} ${name}`);
-}
+        // Otherwise pick random synthetic persona
+        const idx = Math.floor(Math.random() * syntheticPool.length);
+        return syntheticPool[idx];
+    }
 
-// -----------------------------
-// Synthetic Users
-// -----------------------------
-const syntheticUsers = usernamePool.map((name, idx) => ({
-    name,
-    avatar: avatarPool[idx % avatarPool.length]
-}));
-
-// -----------------------------
-// Admin
-// -----------------------------
-const adminUser = {
-    name: "Profit Hunter 🌐",
-    avatar: "static/admin-avatar.png",
-    isAdmin: true
-};
+    return {
+        admin,
+        getRandom,
+        pool: syntheticPool
+    };
+})();
