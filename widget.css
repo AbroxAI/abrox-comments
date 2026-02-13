@@ -4,7 +4,7 @@
 body {
     margin: 0;
     font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
-    background: #0f0f0f;
+    background: #0f0f0f; /* overall dark background */
     color: #e0e0e0;
 }
 
@@ -32,37 +32,46 @@ body {
 }
 
 /* -----------------------------
-   Header
+   Header (Telegram-style)
 ----------------------------- */
 .tg-header {
     display: flex;
     align-items: center;
-    justify-content: flex-start;
-    gap: 10px;
-    padding: 12px;
-    background: #141416;
+    gap: 12px;
+    padding: 10px 12px;
+    background: #141416;          /* dark Telegram-style header */
     border-bottom: 1px solid #222;
     position: sticky;
     top: 0;
-    z-index: 10;
+    z-index: 20;
 }
 
 .tg-back-btn {
     background: none;
     border: none;
-    color: #ccc;
-    font-size: 20px;
+    color: #ccc;                  /* light gray arrow */
+    font-size: 24px;
     cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .tg-comment-count {
-    font-size: 12px;
-    color: #aaa;
+    font-size: 14px;
+    color: #aaa;                  /* muted gray for count */
+    font-weight: 500;
 }
 
 .tg-title {
     font-weight: bold;
-    font-size: 14px;
+    font-size: 16px;
+    color: #e0e0e0;               /* bright off-white */
+    flex: 1;
+    text-align: left;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 /* -----------------------------
@@ -85,7 +94,7 @@ body {
     bottom: 80px;
     left: 50%;
     transform: translateX(-50%);
-    background: #3fa0ff;
+    background: #3fa0ff;          /* Telegram blue */
     color: #fff;
     padding: 6px 12px;
     border-radius: 20px;
@@ -96,6 +105,54 @@ body {
 
 #tg-new-comments.hidden {
     display: none;
+}
+
+/* -----------------------------
+   Post / Channel Container
+----------------------------- */
+.tg-post-anchor {
+    background: #1e1f22;          /* dark post background */
+    border-radius: 16px;
+    padding: 12px;
+    margin-bottom: 10px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+}
+
+.tg-post-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 6px;
+}
+
+.tg-channel-avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+}
+
+.tg-channel-name {
+    font-weight: bold;
+    font-size: 14px;
+    color: #e0e0e0;
+}
+
+.tg-post-time {
+    font-size: 11px;
+    color: #aaa;
+}
+
+.tg-post-content {
+    font-size: 14px;
+    line-height: 1.4;
+    white-space: pre-wrap;
+}
+
+.tg-post-image {
+    width: 100%;
+    border-radius: 12px;
+    margin-top: 8px;
+    object-fit: cover;
 }
 
 /* -----------------------------
@@ -117,7 +174,7 @@ body {
 }
 
 .tg-bubble {
-    background: #1e1f22;
+    background: #1e1f22;          /* normal user bubble */
     padding: 10px 14px;
     border-radius: 16px;
     max-width: 75%;
@@ -133,13 +190,13 @@ body {
     left: -6px;
     top: 14px;
     border: 6px solid transparent;
-    border-right-color: #1e1f22; /* matches bubble color */
+    border-right-color: #1e1f22;  /* matches bubble color */
 }
 
 /* Admin Bubble Style */
 .tg-bubble.admin {
-    background: #2b5278;
-    border: 1px solid #3fa0ff;
+    background: #2b5278;          /* admin bubble darker blue */
+    border: 1px solid #3fa0ff;    /* Telegram blue border */
 }
 
 .tg-bubble.admin::after {
@@ -163,7 +220,7 @@ body {
     gap: 8px;
     padding: 8px 10px;
     border-radius: 24px;
-    background: #141416;
+    background: #141416;          /* dark bar */
     border: 1px solid #222;
     width: 95%;
     max-width: 420px;
@@ -176,7 +233,7 @@ body {
     border-radius: 18px;
     border: none;
     outline: none;
-    background: #1e1f22;
+    background: #1e1f22;          /* input field slightly lighter */
     color: #fff;
     font-size: 14px;
 }
@@ -184,7 +241,7 @@ body {
 .tg-icon-btn {
     background: none;
     border: none;
-    color: #ccc;
+    color: #ccc;                  /* light gray icons */
     cursor: pointer;
     font-size: 20px;
     display: flex;
@@ -193,8 +250,8 @@ body {
 }
 
 #tg-send-btn {
-    display: none; /* hidden by default */
-    background: #3fa0ff;
+    display: none;                /* hidden by default */
+    background: #3fa0ff;          /* blue send arrow */
     border-radius: 50%;
     width: 36px;
     height: 36px;
