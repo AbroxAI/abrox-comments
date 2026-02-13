@@ -1,61 +1,62 @@
-// identity-engine.js
-// -----------------------------
-// Manages personas and admin identity
-// -----------------------------
+// bubble-renderer.js
+// ----------------------------------
+// Responsible ONLY for rendering
+// Telegram-style comment bubbles
+// ----------------------------------
 
-// Admin persona
-const Admin = {
-    name: "Profit Hunter 🌐",
-    avatar: "static/admin-avatar.png",
-    isAdmin: true
-};
+const BubbleRenderer = (() => {
 
-// Synthetic personas pool (1000+ for realism)
-const SyntheticPool = [];
-const TOTAL_PERSONAS = 1000;
+    /**
+     * Render a comment bubble
+     * @param {Object} persona - from identity-engine.js
+     * @param {String} text - message content
+     * @param {HTMLElement} container - comments container
+     */
+    function render(persona, text, container) {
 
-// Example avatar sources for realism
-const AVATAR_SOURCES = [
-    "https://i.pravatar.cc/150?img=",
-    "https://api.dicebear.com/6.x/avataaars/svg?seed=",
-    "https://api.multiavatar.com/" // different style avatars
-];
+        if (!container) return;
 
-// Generate a random synthetic persona
-function generateSyntheticPersona(id) {
-    const nameVariants = [
-        "alex", "maria", "john", "lily", "max", "zoe", "leo", "emma", "sam", "ava"
-    ];
+        const commentEl = document.createElement("div");
+        commentEl.className = "tg-comment";
 
-    // Add random suffix or emoji for realism
-    const suffixes = ["", " 💸", " 🌟", "🔥", "💯", "✨", "💀", "😎"];
+        commentEl.innerHTML = `
+            <img 
+                class="tg-comment-avatar" 
+                src="${persona.avatar}" 
+                alt="${persona.name}"
+            />
 
-    const name = nameVariants[Math.floor(Math.random() * nameVariants.length)]
-        + suffixes[Math.floor(Math.random() * suffixes.length)];
+            <div class="tg-bubble ${persona.isAdmin ? 'admin' : ''}">
+                <div class="tg-bubble-name">
+                    ${persona.name}
+                </div>
+                <div class="tg-bubble-text">
+                    ${escapeHTML(text)}
+                </div>
+            </div>
+        `;
 
-    // Random avatar from sources
-    const avatarSource = AVATAR_SOURCES[Math.floor(Math.random() * AVATAR_SOURCES.length)];
-    const avatar = avatarSource + Math.floor(Math.random() * 100);
+        container.appendChild(commentEl);
+
+        // Smooth scroll to bottom like Telegram
+        commentEl.scrollIntoView({
+            behavior: "smooth",
+            block: "end"
+        });
+    }
+
+    /**
+     * Basic XSS protection
+     */
+    function escapeHTML(str) {
+        return str
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;");
+    }
 
     return {
-        name: name,
-        avatar: avatar,
-        isAdmin: false
+        render
     };
-}
 
-// Populate the SyntheticPool
-for (let i = 0; i < TOTAL_PERSONAS; i++) {
-    SyntheticPool.push(generateSyntheticPersona(i));
-}
-
-// Helper: pick random persona
-function getRandomPersona() {
-    return SyntheticPool[Math.floor(Math.random() * SyntheticPool.length)];
-}
-
-// Expose a function to get admin or synthetic persona
-function getPersona({ type = "synthetic" } = {}) {
-    if (type === "admin") return Admin;
-    return getRandomPersona();
-}
+})();
