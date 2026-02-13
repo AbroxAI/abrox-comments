@@ -1,73 +1,61 @@
+// identity-engine.js
 // -----------------------------
-// Identity Engine
+// Manages personas and admin identity
 // -----------------------------
 
-// Store real users keyed by a unique ID (could be session, localStorage, etc.)
-const realUsers = {};
+// Admin persona
+const Admin = {
+    name: "Profit Hunter 🌐",
+    avatar: "static/admin-avatar.png",
+    isAdmin: true
+};
 
-// Default placeholder avatars (replace with any service or user uploads)
-const defaultAvatars = [
-    'https://i.pravatar.cc/32?u=real1',
-    'https://i.pravatar.cc/32?u=real2',
-    'https://i.pravatar.cc/32?u=real3',
-    'https://i.pravatar.cc/32?u=real4',
-    'https://i.pravatar.cc/32?u=real5'
+// Synthetic personas pool (1000+ for realism)
+const SyntheticPool = [];
+const TOTAL_PERSONAS = 1000;
+
+// Example avatar sources for realism
+const AVATAR_SOURCES = [
+    "https://i.pravatar.cc/150?img=",
+    "https://api.dicebear.com/6.x/avataaars/svg?seed=",
+    "https://api.multiavatar.com/" // different style avatars
 ];
 
-// -----------------------------
-// Generate a new real user
-// -----------------------------
-function registerRealUser(userId, name = null, avatar = null) {
-    if (realUsers[userId]) return realUsers[userId];
+// Generate a random synthetic persona
+function generateSyntheticPersona(id) {
+    const nameVariants = [
+        "alex", "maria", "john", "lily", "max", "zoe", "leo", "emma", "sam", "ava"
+    ];
 
-    const user = {
-        id: userId,
-        name: name || `User${Math.floor(Math.random() * 1000)}`,
-        avatar: avatar || defaultAvatars[Math.floor(Math.random() * defaultAvatars.length)]
-    };
+    // Add random suffix or emoji for realism
+    const suffixes = ["", " 💸", " 🌟", "🔥", "💯", "✨", "💀", "😎"];
 
-    realUsers[userId] = user;
-    return user;
-}
+    const name = nameVariants[Math.floor(Math.random() * nameVariants.length)]
+        + suffixes[Math.floor(Math.random() * suffixes.length)];
 
-// -----------------------------
-// Get a real user by ID
-// -----------------------------
-function getRealUser(userId) {
-    return realUsers[userId] || registerRealUser(userId);
-}
+    // Random avatar from sources
+    const avatarSource = AVATAR_SOURCES[Math.floor(Math.random() * AVATAR_SOURCES.length)];
+    const avatar = avatarSource + Math.floor(Math.random() * 100);
 
-// -----------------------------
-// Create comment object for a real user
-// -----------------------------
-function createRealUserComment(userId, text, image = null) {
-    const user = getRealUser(userId);
     return {
-        name: user.name,
-        avatar: user.avatar,
-        text: text,
-        image: image,
-        isAdmin: false,
-        timestamp: new Date().toISOString()
+        name: name,
+        avatar: avatar,
+        isAdmin: false
     };
 }
 
-// -----------------------------
-// Mix real and synthetic users
-// -----------------------------
-function pickRandomUserForComment() {
-    // 50/50 chance real user or synthetic
-    if (Math.random() < 0.5) {
-        const syntheticComment = createComment(
-            "Random synthetic message",
-            null,
-            false
-        );
-        return syntheticComment;
-    } else {
-        // Example userId: could be session or hash
-        const userId = `real_${Math.floor(Math.random() * 1000)}`;
-        const realComment = createRealUserComment(userId, "Random real user message");
-        return realComment;
-    }
+// Populate the SyntheticPool
+for (let i = 0; i < TOTAL_PERSONAS; i++) {
+    SyntheticPool.push(generateSyntheticPersona(i));
+}
+
+// Helper: pick random persona
+function getRandomPersona() {
+    return SyntheticPool[Math.floor(Math.random() * SyntheticPool.length)];
+}
+
+// Expose a function to get admin or synthetic persona
+function getPersona({ type = "synthetic" } = {}) {
+    if (type === "admin") return Admin;
+    return getRandomPersona();
 }
