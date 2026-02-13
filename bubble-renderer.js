@@ -1,78 +1,61 @@
- // -----------------------------
-// Render a comment in the DOM
+// identity-engine.js
 // -----------------------------
-function renderComment(comment) {
-    const { name, avatar, text, image, isAdmin, timestamp } = comment;
+// Manages personas and admin identity
+// -----------------------------
 
-    // Comment container
-    const commentEl = document.createElement('div');
-    commentEl.className = 'tg-comment';
+// Admin persona
+const Admin = {
+    name: "Profit Hunter 🌐",
+    avatar: "static/admin-avatar.png",
+    isAdmin: true
+};
 
-    // Avatar
-    const avatarEl = document.createElement('img');
-    avatarEl.className = 'tg-comment-avatar';
-    avatarEl.src = avatar;
-    commentEl.appendChild(avatarEl);
+// Synthetic personas pool (1000+ for realism)
+const SyntheticPool = [];
+const TOTAL_PERSONAS = 1000;
 
-    // Bubble
-    const bubbleEl = document.createElement('div');
-    bubbleEl.className = 'tg-bubble';
-    if (isAdmin) bubbleEl.classList.add('admin');
+// Example avatar sources for realism
+const AVATAR_SOURCES = [
+    "https://i.pravatar.cc/150?img=",
+    "https://api.dicebear.com/6.x/avataaars/svg?seed=",
+    "https://api.multiavatar.com/" // different style avatars
+];
 
-    // User name
-    const nameEl = document.createElement('div');
-    nameEl.style.fontSize = '12px';
-    nameEl.style.fontWeight = 'bold';
-    nameEl.style.marginBottom = '2px';
-    nameEl.textContent = name;
-    bubbleEl.appendChild(nameEl);
+// Generate a random synthetic persona
+function generateSyntheticPersona(id) {
+    const nameVariants = [
+        "alex", "maria", "john", "lily", "max", "zoe", "leo", "emma", "sam", "ava"
+    ];
 
-    // Text
-    const textEl = document.createElement('div');
-    textEl.style.fontSize = '14px';
-    textEl.style.lineHeight = '1.4';
-    textEl.textContent = text;
-    bubbleEl.appendChild(textEl);
+    // Add random suffix or emoji for realism
+    const suffixes = ["", " 💸", " 🌟", "🔥", "💯", "✨", "💀", "😎"];
 
-    // Image (if present)
-    if (image) {
-        const imgEl = document.createElement('img');
-        imgEl.src = image;
-        imgEl.style.maxWidth = '200px';
-        imgEl.style.borderRadius = '12px';
-        imgEl.style.marginTop = '6px';
-        imgEl.style.display = 'block';
-        bubbleEl.appendChild(imgEl);
-    }
+    const name = nameVariants[Math.floor(Math.random() * nameVariants.length)]
+        + suffixes[Math.floor(Math.random() * suffixes.length)];
 
-    // Timestamp
-    const timeEl = document.createElement('div');
-    timeEl.style.fontSize = '10px';
-    timeEl.style.color = '#aaa';
-    timeEl.style.marginTop = '2px';
-    const dateObj = new Date(timestamp);
-    timeEl.textContent = dateObj.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-    bubbleEl.appendChild(timeEl);
+    // Random avatar from sources
+    const avatarSource = AVATAR_SOURCES[Math.floor(Math.random() * AVATAR_SOURCES.length)];
+    const avatar = avatarSource + Math.floor(Math.random() * 100);
 
-    commentEl.appendChild(bubbleEl);
-
-    // Append to container
-    const container = document.getElementById('tg-comments-container');
-    container.appendChild(commentEl);
-
-    // Auto-scroll
-    container.scrollTop = container.scrollHeight;
-
-    // Trigger animation
-    requestAnimationFrame(() => {
-        commentEl.style.opacity = '1';
-        commentEl.style.transform = 'translateY(0)';
-    });
+    return {
+        name: name,
+        avatar: avatar,
+        isAdmin: false
+    };
 }
 
-// -----------------------------
-// Render multiple comments
-// -----------------------------
-function renderCommentsArray(commentsArray) {
-    commentsArray.forEach(comment => renderComment(comment));
+// Populate the SyntheticPool
+for (let i = 0; i < TOTAL_PERSONAS; i++) {
+    SyntheticPool.push(generateSyntheticPersona(i));
+}
+
+// Helper: pick random persona
+function getRandomPersona() {
+    return SyntheticPool[Math.floor(Math.random() * SyntheticPool.length)];
+}
+
+// Expose a function to get admin or synthetic persona
+function getPersona({ type = "synthetic" } = {}) {
+    if (type === "admin") return Admin;
+    return getRandomPersona();
 }
