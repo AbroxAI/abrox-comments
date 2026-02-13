@@ -1,71 +1,93 @@
-// -----------------------------
-// App Initialization
-// -----------------------------
+// app.js
+// -------------------------------------------------
+// Global application controller
+// Connects all engines together
+// -------------------------------------------------
 
-// Example Post ID — in real use, set per Telegram post link
-const currentPostId = 'post_001';
+const App = (() => {
 
-// Start realism engine for this post
-startRealismForPost(currentPostId);
+    let commentsContainer;
+    let commentCounterEl;
+    let commentCount = 0;
 
-// -----------------------------
-// Handle sending a comment from input
-// -----------------------------
-const inputField = document.getElementById('tg-comment-input');
-const sendBtn = document.getElementById('tg-send-btn');
+    function init() {
 
-sendBtn.addEventListener('click', () => {
-    const text = inputField.value.trim();
-    if (!text) return;
+        commentsContainer = document.getElementById("tg-comments-container");
+        commentCounterEl = document.getElementById("tg-comment-count");
 
-    // Create a real user comment (generate random ID for demo)
-    const userId = `real_${Math.floor(Math.random() * 10000)}`;
-    const commentObj = createRealUserComment(userId, text);
+        if (!commentsContainer) {
+            console.warn("Comments container not found.");
+            return;
+        }
 
-    // Store in postComments array for the post
-    if (!postComments[currentPostId]) postComments[currentPostId] = [];
-    postComments[currentPostId].push(commentObj);
+        initInteractions();
+        initRealism();
 
-    // Render in DOM
-    renderComment(commentObj);
-
-    // Clear input
-    inputField.value = '';
-    inputField.focus();
-});
-
-// -----------------------------
-// Optional: Handle Enter key for sending
-// -----------------------------
-inputField.addEventListener('keydown', (e) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
-        e.preventDefault();
-        sendBtn.click();
+        observeNewComments();
     }
-});
 
-// -----------------------------
-// Optional: new comments indicator
-// -----------------------------
-const newCommentsIndicator = document.getElementById('tg-new-comments');
-let isAtBottom = true;
+    // -----------------------------------------
+    // Initialize user interactions
+    // -----------------------------------------
+    function initInteractions() {
 
-const commentsContainer = document.getElementById('tg-comments-container');
-commentsContainer.addEventListener('scroll', () => {
-    const { scrollTop, scrollHeight, clientHeight } = commentsContainer;
-    isAtBottom = scrollTop + clientHeight >= scrollHeight - 10;
-    if (isAtBottom) newCommentsIndicator.classList.add('hidden');
-});
+        Interactions.init({
+            container: commentsContainer,
+            input: document.getElementById("tg-comment-input"),
+            sendBtn: document.getElementById("tg-send-btn"),
+            rightButtons: document.querySelector(".tg-right-buttons"),
+            emojiBtn: document.querySelector('.tg-icon-btn[data-type="emoji"]')
+        });
 
-function showNewCommentsIndicator() {
-    if (!isAtBottom) {
-        newCommentsIndicator.classList.remove('hidden');
     }
-}
 
-// Wrap renderComment to show indicator if user scrolled up
-const originalRenderComment = renderComment;
-renderComment = (commentObj) => {
-    originalRenderComment(commentObj);
-    showNewCommentsIndicator();
-};
+    // -----------------------------------------
+    // Initialize synthetic realism engine
+    // -----------------------------------------
+    function initRealism() {
+
+        if (typeof RealismEngine !== "undefined") {
+            RealismEngine.start(commentsContainer);
+        }
+
+    }
+
+    // -----------------------------------------
+    // Auto comment counter observer
+    // -----------------------------------------
+    function observeNewComments() {
+
+        const observer = new MutationObserver(() => {
+            updateCommentCount();
+        });
+
+        observer.observe(commentsContainer, {
+            childList: true
+        });
+
+        updateCommentCount();
+    }
+
+    function updateCommentCount() {
+
+        commentCount = commentsContainer.children.length;
+
+        if (commentCounterEl) {
+            commentCounterEl.textContent = commentCount;
+        }
+
+    }
+
+    return {
+        init
+    };
+
+})();
+
+
+// -----------------------------------------
+// Boot Application
+// -----------------------------------------
+document.addEventListener("DOMContentLoaded", () => {
+    App.init();
+});
