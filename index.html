@@ -10,8 +10,15 @@
 
 <div id="tg-comments-app">
 
-    <!-- Background Layer (Doodle + Noise + Base) -->
+    <!-- Background Layer -->
     <div class="tg-bg-layer"></div>
+
+    <!-- Header -->
+    <div class="tg-header">
+        <button class="tg-back-btn" aria-label="Back"><i data-lucide="arrow-left"></i></button>
+        <span class="tg-comment-count">24 comments</span>
+        <div class="tg-title">Discussion started</div>
+    </div>
 
     <!-- Scrollable Comments Container -->
     <div id="tg-comments-container"></div>
@@ -19,13 +26,23 @@
     <!-- New Comments Indicator -->
     <div id="tg-new-comments" class="hidden">↓ New comments</div>
 
-    <!-- Input Bar -->
-    <div class="tg-input-bar">
-        <button class="tg-icon-btn" data-type="emoji" aria-label="Emoji picker"><i data-lucide="smile"></i></button>
-        <input type="text" id="tg-comment-input" placeholder="Write a comment..." autocomplete="off">
-        <button class="tg-icon-btn" data-type="media" aria-label="Upload media"><i data-lucide="camera"></i></button>
-        <button class="tg-icon-btn" data-type="mic" aria-label="Voice message"><i data-lucide="mic"></i></button>
-        <button id="tg-send-btn" class="tg-send-btn" aria-label="Send message"><i data-lucide="send"></i></button>
+    <!-- Floating Input Bar -->
+    <div class="tg-input-wrapper">
+        <div class="tg-input-bar">
+            <button class="tg-icon-btn" data-type="emoji" aria-label="Emoji picker">
+                <i data-lucide="smile"></i>
+            </button>
+            <input type="text" id="tg-comment-input" placeholder="Write a comment..." autocomplete="off">
+            <button class="tg-icon-btn" data-type="media" aria-label="Upload media">
+                <i data-lucide="camera"></i>
+            </button>
+            <button class="tg-icon-btn" data-type="mic" aria-label="Voice message">
+                <i data-lucide="mic"></i>
+            </button>
+            <button id="tg-send-btn" class="tg-send-btn" aria-label="Send message">
+                <i data-lucide="send"></i>
+            </button>
+        </div>
     </div>
 
 </div>
