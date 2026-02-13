@@ -29,19 +29,28 @@
     <!-- Floating Input Bar -->
     <div class="tg-input-wrapper">
         <div class="tg-input-bar">
+            <!-- Left: Emoji -->
             <button class="tg-icon-btn" data-type="emoji" aria-label="Emoji picker">
                 <i data-lucide="smile"></i>
             </button>
+
+            <!-- Input Field -->
             <input type="text" id="tg-comment-input" placeholder="Write a comment..." autocomplete="off">
-            <button class="tg-icon-btn" data-type="media" aria-label="Upload media">
-                <i data-lucide="camera"></i>
-            </button>
-            <button class="tg-icon-btn" data-type="mic" aria-label="Voice message">
-                <i data-lucide="mic"></i>
-            </button>
+
+            <!-- Send arrow (hidden by default) -->
             <button id="tg-send-btn" class="tg-send-btn" aria-label="Send message">
                 <i data-lucide="send"></i>
             </button>
+
+            <!-- Right: Media / Camera -->
+            <div class="tg-right-buttons">
+                <button class="tg-icon-btn" data-type="media" aria-label="Upload media">
+                    <i data-lucide="camera"></i>
+                </button>
+                <button class="tg-icon-btn" data-type="other-media" aria-label="Other media">
+                    <i data-lucide="image"></i>
+                </button>
+            </div>
         </div>
     </div>
 
