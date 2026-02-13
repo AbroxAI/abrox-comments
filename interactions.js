@@ -1,95 +1,121 @@
 // interactions.js
+// -------------------------------------------------
+// Handles:
+// - Input behavior
+// - Media ↔ Send toggle
+// - Sending real user messages
+// Requires:
+// - bubble-renderer.js
+// -------------------------------------------------
 
-// DOM Elements
-const commentInput = document.getElementById('tg-comment-input');
-const sendBtn = document.getElementById('tg-send-btn');
-const rightButtons = document.querySelector('.tg-right-buttons');
-const commentsContainer = document.getElementById('tg-comments-container');
-const emojiBtn = document.querySelector('.tg-icon-btn[data-type="emoji"]');
+const Interactions = (() => {
 
-// -----------------------------
-// Swap Media Buttons <-> Send Arrow
-// -----------------------------
-commentInput.addEventListener('input', () => {
-    if (commentInput.value.trim().length > 0) {
-        sendBtn.style.display = 'flex';
-        rightButtons.style.display = 'none';
-    } else {
-        sendBtn.style.display = 'none';
-        rightButtons.style.display = 'flex';
+    let container;
+    let input;
+    let sendBtn;
+    let rightButtons;
+    let emojiBtn;
+
+    function init(config) {
+
+        container = config.container;
+        input = config.input;
+        sendBtn = config.sendBtn;
+        rightButtons = config.rightButtons;
+        emojiBtn = config.emojiBtn;
+
+        if (!container || !input || !sendBtn || !rightButtons) {
+            console.warn("Interactions not initialized properly.");
+            return;
+        }
+
+        bindInputToggle();
+        bindSendBehavior();
+        bindMediaButtons();
     }
-});
 
-// -----------------------------
-// Send Message
-// -----------------------------
-sendBtn.addEventListener('click', () => {
-    const text = commentInput.value.trim();
-    if (!text) return;
+    // -----------------------------------------
+    // Telegram-style toggle (media ↔ send)
+    // -----------------------------------------
+    function bindInputToggle() {
 
-    // Get a real or synthetic persona
-    const persona = Personas.getRandom(); // from personas.js
+        input.addEventListener("input", toggleButtons);
+        toggleButtons(); // set initial state
+    }
 
-    // Create comment element
-    const commentEl = document.createElement('div');
-    commentEl.className = 'tg-comment';
+    function toggleButtons() {
+        if (input.value.trim().length > 0) {
+            sendBtn.style.display = "flex";
+            rightButtons.style.display = "none";
+        } else {
+            sendBtn.style.display = "none";
+            rightButtons.style.display = "flex";
+        }
+    }
 
-    commentEl.innerHTML = `
-        <img class="tg-comment-avatar" src="${persona.avatar}" alt="${persona.name}">
-        <div class="tg-bubble ${persona.isAdmin ? 'admin' : ''}">
-            <div class="tg-bubble-name">${persona.name}</div>
-            <div class="tg-bubble-text">${text}</div>
-        </div>
-    `;
+    // -----------------------------------------
+    // Send message
+    // -----------------------------------------
+    function bindSendBehavior() {
 
-    commentsContainer.appendChild(commentEl);
+        sendBtn.addEventListener("click", sendMessage);
 
-    // Scroll smoothly to bottom
-    commentEl.scrollIntoView({ behavior: 'smooth', block: 'end' });
+        input.addEventListener("keydown", (e) => {
+            if (e.key === "Enter" && !e.shiftKey) {
+                if (input.value.trim()) {
+                    e.preventDefault();
+                    sendMessage();
+                }
+            }
+        });
+    }
 
-    // Clear input and reset buttons
-    commentInput.value = '';
-    sendBtn.style.display = 'none';
-    rightButtons.style.display = 'flex';
-});
+    function sendMessage() {
 
-// -----------------------------
-// Emoji Picker
-// -----------------------------
-emojiBtn.addEventListener('click', () => {
-    // TODO: implement actual emoji picker
-    alert('Emoji picker would open here.');
-});
+        const text = input.value.trim();
+        if (!text) return;
 
-// -----------------------------
-// Media / Camera buttons
-// -----------------------------
-rightButtons.querySelectorAll('.tg-icon-btn').forEach(btn => {
-    btn.addEventListener('click', () => {
-        const type = btn.getAttribute('aria-label');
-        alert(`${type} clicked`);
-        // TODO: media preview
-    });
-});
+        // Real user persona (fixed identity)
+        const userPersona = {
+            name: "You",
+            avatar: "static/real-user.png",
+            isAdmin: false
+        };
 
-// -----------------------------
-// Optional: Generate synthetic comments over time
-// -----------------------------
-setInterval(() => {
-    const syntheticComment = RealismEngine.generateComment(); // from realism-engine.js
-    if (!syntheticComment) return;
+        BubbleRenderer.render(userPersona, text, container);
 
-    const commentEl = document.createElement('div');
-    commentEl.className = 'tg-comment';
+        resetInput();
+    }
 
-    commentEl.innerHTML = `
-        <img class="tg-comment-avatar" src="${syntheticComment.avatar}" alt="${syntheticComment.name}">
-        <div class="tg-bubble ${syntheticComment.isAdmin ? 'admin' : ''}">
-            <div class="tg-bubble-name">${syntheticComment.name}</div>
-            <div class="tg-bubble-text">${syntheticComment.text}</div>
-        </div>
-    `;
+    function resetInput() {
+        input.value = "";
+        toggleButtons();
+        input.focus();
+    }
 
-    commentsContainer.appendChild(commentEl);
-    commentEl.scrollIntoView({ behavior: 'smooth', block: 'end' });
-}, 12000); // every 12 seconds, new synthetic comment
+    // -----------------------------------------
+    // Media + Emoji button hooks
+    // (Logic can be expanded later)
+    // -----------------------------------------
+    function bindMediaButtons() {
+
+        if (emojiBtn) {
+            emojiBtn.addEventListener("click", () => {
+                console.log("Emoji picker triggered");
+                // integrate emoji system later
+            });
+        }
+
+        rightButtons.querySelectorAll(".tg-icon-btn").forEach(btn => {
+            btn.addEventListener("click", () => {
+                const type = btn.getAttribute("aria-label");
+                console.log(`${type} clicked`);
+            });
+        });
+    }
+
+    return {
+        init
+    };
+
+})();
