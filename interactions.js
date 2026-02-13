@@ -1,116 +1,67 @@
-// -----------------------------
-// DOM Elements
-// -----------------------------
-const inputField = document.getElementById('tg-comment-input');
-const emojiBtn = document.querySelector('.tg-icon-btn[data-type="emoji"]');
-const mediaBtn = document.querySelector('.tg-icon-btn[data-type="media"]');
-const micBtn = document.querySelector('.tg-icon-btn[data-type="mic"]');
+// Get DOM elements
+const commentInput = document.getElementById('tg-comment-input');
 const sendBtn = document.getElementById('tg-send-btn');
+const rightButtons = document.querySelector('.tg-right-buttons');
 const commentsContainer = document.getElementById('tg-comments-container');
+const emojiBtn = document.querySelector('.tg-icon-btn[data-type="emoji"]');
 
 // -----------------------------
-// Telegram-style Input Button Toggle
+// Swap Media Buttons <-> Send Arrow
 // -----------------------------
-function updateInputButtons() {
-    if(inputField.value.trim().length > 0) {
-        // User typing → hide emoji/media/mic, show blue send
-        emojiBtn.style.display = 'none';
-        mediaBtn.style.display = 'none';
-        micBtn.style.display = 'none';
-        sendBtn.style.background = '#3fa0ff';
+commentInput.addEventListener('input', () => {
+    if (commentInput.value.trim().length > 0) {
+        // Typing: show blue send arrow
+        sendBtn.style.display = 'flex';
+        rightButtons.style.display = 'none';
     } else {
-        // Empty → show emoji/media/mic
-        emojiBtn.style.display = 'flex';
-        mediaBtn.style.display = 'flex';
-        micBtn.style.display = 'flex';
-        sendBtn.style.background = '#555'; // inactive gray
-    }
-}
-
-// Listen for input changes
-inputField.addEventListener('input', updateInputButtons);
-updateInputButtons(); // initial
-
-// -----------------------------
-// Emoji Picker (simple example)
-// -----------------------------
-emojiBtn.addEventListener('click', () => {
-    // Simple prompt for demonstration; you can replace with full emoji UI
-    const emoji = prompt('Insert emoji:');
-    if (emoji) {
-        inputField.value += emoji;
-        updateInputButtons();
-        inputField.focus();
+        // Empty: hide send, show media buttons
+        sendBtn.style.display = 'none';
+        rightButtons.style.display = 'flex';
     }
 });
 
 // -----------------------------
-// Media Picker
-// -----------------------------
-mediaBtn.addEventListener('click', () => {
-    const fileInput = document.createElement('input');
-    fileInput.type = 'file';
-    fileInput.accept = 'image/*';
-    fileInput.onchange = (e) => {
-        const file = e.target.files[0];
-        if (!file) return;
-        const reader = new FileReader();
-        reader.onload = () => {
-            const imageData = reader.result;
-            // Create a temporary bubble with image preview
-            sendComment(inputField.value, imageData);
-            inputField.value = '';
-            updateInputButtons();
-        };
-        reader.readAsDataURL(file);
-    };
-    fileInput.click();
-});
-
-// -----------------------------
-// Send Button
+// Send Message
 // -----------------------------
 sendBtn.addEventListener('click', () => {
-    const text = inputField.value.trim();
-    if (!text) return; // don't send empty
-    sendComment(text);
-    inputField.value = '';
-    updateInputButtons();
+    const text = commentInput.value.trim();
+    if (!text) return;
+
+    // Create comment element
+    const commentEl = document.createElement('div');
+    commentEl.className = 'tg-comment';
+
+    commentEl.innerHTML = `
+        <img class="tg-comment-avatar" src="static/real-user.png" alt="User Avatar">
+        <div class="tg-bubble">
+            <div>You</div>
+            <div>${text}</div>
+        </div>
+    `;
+
+    commentsContainer.appendChild(commentEl);
+
+    // Clear input and reset buttons
+    commentInput.value = '';
+    sendBtn.style.display = 'none';
+    rightButtons.style.display = 'flex';
+
+    // Scroll to bottom
+    commentsContainer.scrollTop = commentsContainer.scrollHeight;
 });
 
 // -----------------------------
-// Function to create a bubble
+// Emoji Picker
 // -----------------------------
-function sendComment(text, imageData = null) {
-    // Create comment container
-    const comment = document.createElement('div');
-    comment.className = 'tg-comment';
+emojiBtn.addEventListener('click', () => {
+    alert('Emoji picker would open here.');
+});
 
-    // Avatar (replace with real user avatar later)
-    const avatar = document.createElement('img');
-    avatar.className = 'tg-comment-avatar';
-    avatar.src = 'https://i.pravatar.cc/32?u=' + Math.random(); // placeholder
-    comment.appendChild(avatar);
-
-    // Bubble
-    const bubble = document.createElement('div');
-    bubble.className = 'tg-bubble';
-    bubble.innerText = text;
-
-    // Add image if exists
-    if(imageData) {
-        const img = document.createElement('img');
-        img.src = imageData;
-        img.style.maxWidth = '200px';
-        img.style.borderRadius = '12px';
-        img.style.display = 'block';
-        img.style.marginTop = '6px';
-        bubble.appendChild(img);
-    }
-
-    comment.appendChild(bubble);
-    commentsContainer.appendChild(comment);
-
-    // Scroll into view
-    commentsContainer.scrollTop = commentsContainer.scrollHeight;
-}
+// -----------------------------
+// Media / Camera buttons
+// -----------------------------
+rightButtons.querySelectorAll('.tg-icon-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+        alert(`${btn.getAttribute('aria-label')} clicked`);
+    });
+});
