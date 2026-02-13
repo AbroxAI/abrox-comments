@@ -15,9 +15,16 @@
 
     <!-- Header -->
     <div class="tg-header">
-        <button class="tg-back-btn" aria-label="Back"><i data-lucide="arrow-left"></i></button>
-        <span class="tg-comment-count">24 comments</span>
-        <div class="tg-title">Discussion started</div>
+        <!-- Back Arrow -->
+        <button class="tg-back-btn" aria-label="Back">
+            <i data-lucide="arrow-left"></i>
+        </button>
+
+        <!-- Comment Count -->
+        <span class="tg-comment-count" id="tg-comment-count">0 comments</span>
+
+        <!-- Post Title / Discussion -->
+        <div class="tg-title" id="tg-post-title">Loading...</div>
     </div>
 
     <!-- Scrollable Comments Container -->
@@ -26,7 +33,7 @@
     <!-- New Comments Indicator -->
     <div id="tg-new-comments" class="hidden">↓ New comments</div>
 
-    <!-- Floating Input Bar -->
+    <!-- Floating Input Bar (to be fixed next) -->
     <div class="tg-input-wrapper">
         <div class="tg-input-bar">
             <!-- Left: Emoji -->
